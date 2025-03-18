@@ -1,0 +1,113 @@
+
+enum Status {
+  PENDING
+  COMPLETED
+}
+enum Visibility {
+  VISIBLE
+  HIDDEN
+}
+
+enum Pinned {
+  PINNED
+  UNPINNED
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN 
+  USER
+}
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User{
+  id Int @id @default(autoincrement())
+  name String 
+  email String 
+  password String 
+  notionToken String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  communities Community[]
+  communityParticipant CommunityParticipants[]
+  todos Todo[]
+}
+
+model Community{
+  id Int @id @default(autoincrement())
+  name String 
+  description String 
+  logoUrl String? 
+  websiteUrl String?
+  createdBy Int 
+  user User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  subjects Subjects[]
+  participants CommunityParticipants[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+model CommunityParticipants{
+  id Int @id @default(autoincrement())
+  role Role @default(USER)
+
+  communityId Int 
+  community Community @relation(fields: [communityId],references: [id],onDelete: Cascade)
+
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Subjects{
+  id Int @id @default(autoincrement())
+  communityId Int 
+  community Community @relation(fields:[communityId],references: [id],onDelete: Cascade)
+  name String 
+  chapters Chapters[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Chapters {
+  id Int @id @default(autoincrement())
+  subjectId Int 
+  subject Subjects @relation(fields: [subjectId],references: [id], onDelete: Cascade)
+  name String
+  notes Notes[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+}
+
+model Notes {
+  id Int @id @default(autoincrement())
+  title String 
+  description String 
+  documentLink String 
+  ChaptersId Int 
+  chapters Chapters @relation(fields: [ChaptersId],references: [id],onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Todo{
+  id Int @id @default(autoincrement())
+  createdBy Int 
+  user User @relation(fields: [createdBy],references:[id],onDelete: Cascade)
+  title String 
+  description String 
+  pinned Pinned @default(UNPINNED)
+  status Status
+  deadline DateTime
+  visibility Visibility @default(VISIBLE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
