@@ -18,6 +18,13 @@ enum Role {
   ADMIN 
   USER
 }
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 generator client {
   provider = "prisma-client-js"
 }
@@ -30,7 +37,7 @@ datasource db {
 model User{
   id Int @id @default(autoincrement())
   name String 
-  email String 
+  email String @unique
   password String 
   notionToken String?
   createdAt DateTime  @default(now())
@@ -104,10 +111,11 @@ model Todo{
   user User @relation(fields: [createdBy],references:[id],onDelete: Cascade)
   title String 
   description String 
-  pinned Pinned @default(UNPINNED)
-  status Status
   deadline DateTime
+  pinned Pinned @default(UNPINNED)
+  status Status @default(PENDING)
   visibility Visibility @default(VISIBLE)
+  priority Priority @default(LOW)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
