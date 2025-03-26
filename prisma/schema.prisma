@@ -35,7 +35,7 @@ datasource db {
 }
 
 model User{
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   name String 
   email String @unique
   password String 
@@ -48,12 +48,13 @@ model User{
 }
 
 model Community{
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   name String 
   description String 
   logoUrl String? 
   websiteUrl String?
-  createdBy Int 
+  createdBy String 
+  visible Visibility @default(VISIBLE)
   user User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   subjects Subjects[]
   participants CommunityParticipants[]
@@ -61,13 +62,13 @@ model Community{
   updatedAt DateTime @updatedAt
 }
 model CommunityParticipants{
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   role Role @default(USER)
 
-  communityId Int 
+  communityId String 
   community Community @relation(fields: [communityId],references: [id],onDelete: Cascade)
 
-  userId Int
+  userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
@@ -75,18 +76,19 @@ model CommunityParticipants{
 }
 
 model Subjects{
-  id Int @id @default(autoincrement())
-  communityId Int 
+  id String @id @default(uuid())
+  communityId String 
   community Community @relation(fields:[communityId],references: [id],onDelete: Cascade)
   name String 
+  description String?
   chapters Chapters[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Chapters {
-  id Int @id @default(autoincrement())
-  subjectId Int 
+  id String @id @default(uuid())
+  subjectId String 
   subject Subjects @relation(fields: [subjectId],references: [id], onDelete: Cascade)
   name String
   notes Notes[]
@@ -95,19 +97,19 @@ model Chapters {
 }
 
 model Notes {
-  id Int @id @default(autoincrement())
+  id String @id @default(uuid())
   title String 
   description String 
   documentLink String 
-  ChaptersId Int 
+  ChaptersId String 
   chapters Chapters @relation(fields: [ChaptersId],references: [id],onDelete: Cascade)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Todo{
-  id Int @id @default(autoincrement())
-  createdBy Int 
+  id String @id @default(uuid())
+  createdBy String 
   user User @relation(fields: [createdBy],references:[id],onDelete: Cascade)
   title String 
   description String 

@@ -7,6 +7,7 @@ import { rateLimit } from "express-rate-limit";
 import mogoSanitize from "express-mongo-sanitize";
 import helmet from "helmet";
 import hpp from "hpp";
+import TestingRouter from "./routes/ai.routes.js";
 import { todoRouter, userRouter, communityRouter } from "./routes/index.js";
 const app = express();
 const port = process.env.PORT || 8000;
@@ -87,6 +88,7 @@ const errorHandler = (error, req, res, next) => {
 app.use(errorHandler);
 
 //routes
+app.use("/api/v1/test/ai", TestingRouter);
 app.use("/api/v1/todo", todoRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/community", communityRouter);

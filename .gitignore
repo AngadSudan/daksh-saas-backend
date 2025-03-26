@@ -3,6 +3,8 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+./prisma/migrations
+*.html
 # Logs
 logs/
 *.log
@@ -77,3 +79,4 @@ public
 
 # TernJS port file
 .tern-port
+prisma/migrations/20250324071002_init/migration.sql

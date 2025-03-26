@@ -44,13 +44,13 @@ const createTodo = async (req, res) => {
     if (!deadline) throw new Error("please enter a deadline");
     if (!user) throw new Error("user token invalidated");
 
-    const dbUser = await primsaClient.user.findFirst({
+    const dbUser = await prismaClient.user.findFirst({
       where: { id: user },
     });
     console.log(dbUser);
     if (!dbUser) throw new Error("no dbUser found");
 
-    const createdtodo = await primsaClient.todo.create({
+    const createdtodo = await prismaClient.todo.create({
       data: {
         createdBy: dbUser.id,
         title,
@@ -75,14 +75,9 @@ const createTodo = async (req, res) => {
 //updating a pre-exisitng todo
 const updateTodo = async (req, res) => {
   try {
-    const todoid = Number(req.params.todoid);
-    const userId = Number(req.user.id);
+    const todoid = req.params.todoid;
+    const userId = req.user.id;
     const { title, description, deadline } = req.body;
-
-    if (isNaN(todoid)) throw new Error("Invalid todo ID");
-    if (isNaN(userId)) throw new Error("Invalid user ID");
-
-    console.log({ todoid, userId });
 
     // Fetch the Todo with necessary fields
     const dbTodo = await prismaClient.todo.findUnique({
@@ -131,10 +126,8 @@ const updateTodo = async (req, res) => {
 //set the visibility to hidden (deletion analogy)
 const setVisibilityHidden = async (req, res) => {
   try {
-    const todoid = Number(req.params.todoid);
-    const userId = Number(req.user.id);
-    if (isNaN(todoid)) throw new Error("Invalid todo ID");
-    if (isNaN(userId)) throw new Error("Invalid user ID");
+    const todoid = req.params.todoid;
+    const userId = req.user.id;
 
     const dbTodo = await prisma.todo.findUnique({
       where: { id: todoid },
@@ -176,10 +169,8 @@ const setVisibilityHidden = async (req, res) => {
 // set the todo as completed
 const toggleCompletionStatus = async (req, res) => {
   try {
-    const todoid = Number(req.params.todoid);
-    const userId = Number(req.user.id);
-    if (isNaN(todoid)) throw new Error("Invalid todo ID");
-    if (isNaN(userId)) throw new Error("Invalid user ID");
+    const todoid = req.params.todoid;
+    const userId = req.user.id;
 
     const dbTodo = await prismaClient.todo.findUnique({
       where: { id: todoid },
@@ -220,11 +211,8 @@ const toggleCompletionStatus = async (req, res) => {
 // set the priority of the todo  based on deadline
 const setReminderForUrgency = async (req, res) => {
   try {
-    const todoid = Number(req.params.todoid);
-    const userId = Number(req.user.id);
-
-    if (isNaN(todoid)) throw new Error("Invalid todo ID");
-    if (isNaN(userId)) throw new Error("Invalid user ID");
+    const todoid = req.params.todoid;
+    const userId = req.user.id;
 
     // Fetch Todo with only required fields
     const dbTodo = await prismaClient.todo.findUnique({
@@ -276,8 +264,7 @@ const setReminderForUrgency = async (req, res) => {
 // get all pinned todos
 const getPinnedTodos = async (req, res) => {
   try {
-    const user = Number(req.user.id);
-    if (isNaN(user)) throw new Error("Invalid user ID");
+    const user = req.user.id;
     const dbUser = await prismaClient.user.findUnique({
       where: { id: user },
     });
@@ -309,10 +296,8 @@ const getPinnedTodos = async (req, res) => {
 // toggle the pin status of a todo
 const togglePinStatus = async (req, res) => {
   try {
-    const todoid = Number(req.params.todoid);
-    const userId = Number(req.user.id);
-    if (isNaN(todoid)) throw new Error("Invalid todo ID");
-    if (isNaN(userId)) throw new Error("Invalid user ID");
+    const todoid = req.params.todoid;
+    const userId = req.user.id;
 
     const dbTodo = await prismaClient.todo.findUnique({
       where: { id: todoid },

@@ -9,24 +9,34 @@ import {
   addParticipantsToCommunity,
   removeParticipantsFromCommunity,
   addSubjectToCommunity,
+  getSubjectsAndChaptersPerCommunity,
   updateSubjectInCommunity,
   removeSubjectFromCommunity,
-  getSubjectsAndChaptersPerCommunity,
   addChapterToSubject,
   addNotesToChapters,
+  getNotesForChapters,
   updateNotesToChapter,
   removeNotesFromChapter,
   updateChaptersInSubjects,
   removeChapterFromSubject,
 } from "../controllers/communites.controllers.js";
+
+import upload from "../middlewares/multer.middleware.js";
+
 import verifyJWT from "../middlewares/auth.middlewares.js";
 const communityRouter = Router();
 
+// tested
 communityRouter.get("/get-user-communities", verifyJWT, getCommunitiesByUser);
+//tested
 communityRouter.get("/communities/:communityid", verifyJWT, getCommunityById);
+//tested
 communityRouter.post("/communities", verifyJWT, createCommunity);
+//tested
 communityRouter.patch("/communities/:communityid", verifyJWT, updateCommunity);
+//tested
 communityRouter.delete("/communities/:communityid", verifyJWT, deleteCommunity);
+//tested
 communityRouter.post(
   "/communities/:communityid/join",
   verifyJWT,
@@ -38,55 +48,37 @@ communityRouter.post(
   verifyJWT,
   addParticipantsToCommunity
 );
+
+//tested and working
+communityRouter.post(
+  "/:communityid/add-subjects",
+  verifyJWT,
+  addSubjectToCommunity
+);
+
 communityRouter.delete(
   "/communities/:communityid/participants",
   verifyJWT,
   removeParticipantsFromCommunity
 );
 
+// tested
 communityRouter.get(
   "/communities/:communityid/subjects",
   verifyJWT,
   getSubjectsAndChaptersPerCommunity
 );
-communityRouter.post(
-  "/communities/:communityid/subjects",
-  verifyJWT,
-  addSubjectToCommunity
-);
-communityRouter.patch(
-  "/subjects/:subjectid",
-  verifyJWT,
-  updateSubjectInCommunity
-);
-communityRouter.delete(
-  "/subjects/:subjectid",
-  verifyJWT,
-  removeSubjectFromCommunity
-);
 
+communityRouter.post("/subject/:subjectid", verifyJWT, addChapterToSubject);
 communityRouter.post(
-  "/subjects/:subjectid/chapters",
+  "/chapter/:chapterid",
   verifyJWT,
-  addChapterToSubject
-);
-communityRouter.patch(
-  "/chapters/:chapterid",
-  verifyJWT,
-  updateChaptersInSubjects
-);
-communityRouter.delete(
-  "/chapters/:chapterid",
-  verifyJWT,
-  removeChapterFromSubject
-);
-
-communityRouter.post(
-  "/chapters/:chapterid/notes",
-  verifyJWT,
+  upload.single("notes"),
   addNotesToChapters
 );
-communityRouter.patch("/notes/:noteid", verifyJWT, updateNotesToChapter);
-communityRouter.delete("/notes/:noteid", verifyJWT, removeNotesFromChapter);
-
+communityRouter.get(
+  "/chapter/:chapterid/notes",
+  verifyJWT,
+  getNotesForChapters
+);
 export default communityRouter;
