@@ -75,10 +75,14 @@ const loginUser = async (req, res) => {
 
     return res
       .status(200)
+      .header("Access-Control-Allow-Credentials", "true")
+      .header("Access-Control-Allow-Credentials", "true")
+      .header("Access-Control-Expose-Headers", "set-cookie")
+      .header("Authorization", `Bearer ${accessToken}`)
       .cookie("token", accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === "production", // Only true in production
-        sameSite: "strict", // Prevents CSRF attacks
+        sameSite: "lax", // Prevents CSRF attacks
         maxAge: 1000 * 60 * 60 * 24 * 15, // 15 days expiration
       })
       .json(

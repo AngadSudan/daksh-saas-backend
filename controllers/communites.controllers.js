@@ -676,8 +676,32 @@ const getNotesForChapters = async (req, res) => {
       );
   }
 };
+
+const getNotesById = async (req, res) => {
+  try {
+    const { notesid: noteid } = req.params;
+    console.log(noteid);
+    if (!noteid) throw new Error("no chapter found");
+
+    const dbNotes = await prismaClient.notes.findUnique({
+      where: { id: noteid },
+    });
+
+    if (!dbNotes)
+      return res.status(200).json(new ApiResponse(200, "no notes found", []));
+    return res.status(200).json(new ApiResponse(200, "Success", dbNotes));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json(
+        new ApiResponse(500, error.message || "Internal Server Error", null)
+      );
+  }
+};
 export {
   getCommunitiesByUser,
+  getNotesById,
   getCommunityById,
   createCommunity,
   updateCommunity,

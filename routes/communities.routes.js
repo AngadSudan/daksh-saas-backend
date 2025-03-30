@@ -12,6 +12,7 @@ import {
   getSubjectsAndChaptersPerCommunity,
   updateSubjectInCommunity,
   removeSubjectFromCommunity,
+  getNotesById,
   addChapterToSubject,
   addNotesToChapters,
   getNotesForChapters,
@@ -81,4 +82,5 @@ communityRouter.get(
   verifyJWT,
   getNotesForChapters
 );
+communityRouter.get("/get-by-notes-id/:notesid", verifyJWT, getNotesById);
 export default communityRouter;
