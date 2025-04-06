@@ -20,7 +20,7 @@ const getCommunitiesByUser = async (req, res) => {
     const dbUser = await prismaClient.user.findUnique({
       where: { id: user },
     });
-    if (!dbUser) throw new Error("User Communities not found");
+    if (!dbUser) throw new Error("Db User  not found");
 
     const userCommunities = await prismaClient.community.findMany({
       where: {
@@ -37,7 +37,8 @@ const getCommunitiesByUser = async (req, res) => {
       },
     });
 
-    if (!userCommunities) throw new Error("User Communities not found");
+    if (!userCommunities)
+      return res.status(200).json(new ApiResponse(200, "Success", []));
 
     return res
       .status(200)
@@ -266,13 +267,12 @@ const addParticipantsToCommunity = async (req, res) => {
     if (!dbCommunity) throw new Error("no such community found");
     const AdminUser = await prismaClient.communityParticipants.findUnique({
       where: {
-        AND: [{ communityId: communityid }, { id: user }],
+        communityId: communityid,
+        id: user,
       },
     });
-    if (!AdminUser)
-      throw new Error("no admin user found with the given token id");
 
-    if (AdminUser.role !== "ADMIN")
+    if (dbCommunity.createdBy !== user && AdminUser.role !== "ADMIN")
       throw new Error("only admin can add participants to the community");
 
     if (!userId) throw new Error("no participant token  found");
@@ -552,7 +552,7 @@ const addNotesToChapters = async (req, res) => {
     const NoteUrl = req.file.path;
     const { title, description } = req.body;
     const { chapterid } = req.params;
-
+    console.log(title, description);
     if (!chapterid) throw new Error("no such chapter found");
     if (!title) throw new Error("title is required to create a note");
     if (!description)
@@ -568,6 +568,7 @@ const addNotesToChapters = async (req, res) => {
     if (!dbChapter) throw new Error("no such chapter found in the db");
     const fileLink = await cloudinaryService.uploadToCloudinary(NoteUrl);
     console.log(fileLink);
+    if (!fileLink) throw new Error("upload to cloudinary failed");
     const createdNote = await prismaClient.notes.create({
       data: {
         title,

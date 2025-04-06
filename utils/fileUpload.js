@@ -52,7 +52,7 @@ class CloudinaryService {
         fs.unlinkSync(filepath);
       }
 
-      return response.asset_id;
+      return response.secure_url;
     } catch (error) {
       console.error("Error uploading to Cloudinary:", error);
 

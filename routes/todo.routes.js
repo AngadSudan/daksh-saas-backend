@@ -10,10 +10,10 @@ import {
   togglePinStatus,
 } from "../controllers/todos.controllers.js";
 import verifyJWT from "../middlewares/auth.middlewares.js";
-todoRouter.get("/get-todo/", verifyJWT, getTodosByUser);
-todoRouter.post("/create-todo/", verifyJWT, createTodo);
+todoRouter.get("/get-todo", verifyJWT, getTodosByUser);
+todoRouter.post("/create-todo", verifyJWT, createTodo);
 todoRouter.put("/update-todo/:todoid", verifyJWT, updateTodo);
-todoRouter.put(
+todoRouter.delete(
   "/set-visibility-hidden/:todoid",
   verifyJWT,
   setVisibilityHidden

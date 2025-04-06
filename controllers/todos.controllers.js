@@ -18,7 +18,7 @@ const getTodosByUser = async (req, res) => {
     if (!dbUser) throw new Error("User not found");
 
     const todos = await prismaClient.todo.findMany({
-      where: { createdBy: user },
+      where: { createdBy: user, visibility: "VISIBLE" },
     });
     if (!todos)
       return res.status(200).json(new ApiResponse(200, "No todos found", []));
@@ -55,7 +55,7 @@ const createTodo = async (req, res) => {
         createdBy: dbUser.id,
         title,
         description,
-        deadline,
+        deadline: new Date(deadline),
       },
     });
 
@@ -77,7 +77,7 @@ const updateTodo = async (req, res) => {
   try {
     const todoid = req.params.todoid;
     const userId = req.user.id;
-    const { title, description, deadline } = req.body;
+    const { title, description, deadline, priority } = req.body;
 
     // Fetch the Todo with necessary fields
     const dbTodo = await prismaClient.todo.findUnique({
@@ -105,6 +105,7 @@ const updateTodo = async (req, res) => {
         title: title ?? dbTodo.title,
         description: description ?? dbTodo.description,
         deadline: deadline ? new Date(deadline) : dbTodo.deadline,
+        priority: priority ?? dbTodo.priority,
       },
     });
 
@@ -129,7 +130,7 @@ const setVisibilityHidden = async (req, res) => {
     const todoid = req.params.todoid;
     const userId = req.user.id;
 
-    const dbTodo = await prisma.todo.findUnique({
+    const dbTodo = await prismaClient.todo.findUnique({
       where: { id: todoid },
     });
 
@@ -186,10 +187,9 @@ const toggleCompletionStatus = async (req, res) => {
       throw new Error("User not authorized to update this todo");
 
     const updatedTodo = await prismaClient.todo.update({
-      where: { id: todoid },
+      where: { id: dbTodo.id },
       data: {
-        isCompleted:
-          dbTodo.isCompleted === "COMPLETED" ? "INCOMPLETE" : "COMPLETED",
+        status: dbTodo.status === "COMPLETED" ? "PENDING" : "COMPLETED",
       },
     });
 
@@ -314,7 +314,7 @@ const togglePinStatus = async (req, res) => {
 
     const updatedTodo = await prismaClient.todo.update({
       where: { id: todoid },
-      data: { isPinned: dbTodo.pinned === "PINNED" ? "UNPINNED" : "PINNED" },
+      data: { pinned: dbTodo.pinned === "PINNED" ? "UNPINNED" : "PINNED" },
     });
 
     return res

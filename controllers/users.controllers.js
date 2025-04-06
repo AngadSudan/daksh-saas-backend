@@ -209,6 +209,31 @@ const updateUserProfile = async (req, res) => {
   }
 };
 
+const getUserByEmail = async (req, res) => {
+  const { email } = req.body;
+  try {
+    if (!email.trim()) throw new Error("Please enter an email");
+
+    const dbUser = await prismaClient.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+      },
+    });
+    if (!dbUser) throw new Error("User not found");
+
+    return res.status(200).json(new ApiResponse(200, "User found", dbUser));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json(
+        new ApiResponse(500, error.message || "Internal Server Error", null)
+      );
+  }
+};
 const updateUserProfileImage = async (req, res) => {};
 const updateNotionToken = async (req, res) => {};
 
@@ -218,4 +243,5 @@ export {
   getUserProfile,
   resetPassword,
   updateUserProfile,
+  getUserByEmail,
 };
