@@ -549,26 +549,42 @@ const addChapterToSubject = async (req, res) => {
 const addNotesToChapters = async (req, res) => {
   try {
     console.log(req.file);
-    const NoteUrl = req.file.path;
-    const { title, description } = req.body;
-    const { chapterid } = req.params;
-    console.log(title, description);
-    if (!chapterid) throw new Error("no such chapter found");
-    if (!title) throw new Error("title is required to create a note");
-    if (!description)
-      throw new Error("description is required to create a note");
-    if (!NoteUrl)
+
+    if (!req.file) {
       return res
         .status(400)
-        .json(new ApiResponse(400, "Note is required", null));
+        .json(new ApiResponse(400, "Note file is required", null));
+    }
+
+    const { title, description } = req.body;
+    const { chapterid } = req.params;
+
+    console.log(title, description);
+
+    if (!chapterid) throw new Error("No such chapter found");
+    if (!title) throw new Error("Title is required to create a note");
+    if (!description)
+      throw new Error("Description is required to create a note");
 
     const dbChapter = await prismaClient.chapters.findUnique({
       where: { id: chapterid },
     });
-    if (!dbChapter) throw new Error("no such chapter found in the db");
-    const fileLink = await cloudinaryService.uploadToCloudinary(NoteUrl);
+
+    if (!dbChapter) throw new Error("No such chapter found in the database");
+
+    // Upload file to Cloudinary using buffer
+    const fileBuffer = req.file.buffer;
+    const fileFormat = req.file.mimetype.split("/")[1]; // Extract file format
+
+    const fileLink = await cloudinaryService.uploadToCloudinary(
+      fileBuffer,
+      fileFormat
+    );
     console.log(fileLink);
-    if (!fileLink) throw new Error("upload to cloudinary failed");
+
+    if (!fileLink) throw new Error("Upload to Cloudinary failed");
+
+    // Save note details in the database
     const createdNote = await prismaClient.notes.create({
       data: {
         title,
@@ -578,12 +594,13 @@ const addNotesToChapters = async (req, res) => {
       },
     });
 
-    if (!createdNote) throw new Error("Note couldnot be created");
+    if (!createdNote) throw new Error("Note could not be created");
+
     return res
       .status(200)
       .json(new ApiResponse(200, "Note created successfully", createdNote));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return res
       .status(500)
       .json(

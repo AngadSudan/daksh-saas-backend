@@ -1,27 +1,8 @@
 import { v2 as Cloudinary } from "cloudinary";
-import fs from "fs";
 import stream from "stream";
 import { promisify } from "util";
 
 const streamUpload = promisify(Cloudinary.uploader.upload_stream);
-
-function extractPublicId(fileUrl) {
-  try {
-    const url = new URL(fileUrl);
-    const pathname = url.pathname;
-
-    const publicId = pathname
-      .split("/")
-      .slice(2)
-      .join("/")
-      .replace(/\.[^/.]+$/, "");
-
-    return publicId;
-  } catch (error) {
-    console.error("Invalid Cloudinary URL:", fileUrl);
-    return null;
-  }
-}
 
 class CloudinaryService {
   constructor() {
@@ -32,36 +13,29 @@ class CloudinaryService {
     });
   }
 
-  async uploadToCloudinary(filepath) {
+  async uploadToCloudinary(fileBuffer, fileFormat) {
     try {
-      if (!filepath || !fs.existsSync(filepath)) {
-        console.error("File path is invalid or does not exist:", filepath);
-        throw new Error("Invalid file path");
+      if (!fileBuffer) {
+        throw new Error("Invalid file buffer");
       }
 
-      const response = await Cloudinary.uploader.upload(filepath, {
+      const uploadStream = stream.PassThrough(); // Create a stream for Cloudinary upload
+      const uploadPromise = streamUpload(uploadStream, {
         resource_type: "auto",
-        // flags: "attachment",
+        format: fileFormat, // Optional: specify format (jpg, png, etc.)
         access_mode: "public",
       });
 
-      console.log("File uploaded successfully:", response.secure_url);
+      uploadStream.end(fileBuffer); // Write the file buffer to stream
 
-      // Delete file after successful upload
-      if (fs.existsSync(filepath)) {
-        fs.unlinkSync(filepath);
-      }
+      const response = await uploadPromise;
+      if (!response) return null;
+      console.log("File uploaded successfully:", response.secure_url);
 
       return response.secure_url;
     } catch (error) {
       console.error("Error uploading to Cloudinary:", error);
-
-      // Delete file if it still exists after failure
-      if (filepath && fs.existsSync(filepath)) {
-        fs.unlinkSync(filepath);
-      }
-
-      return new Error("error in uploading file to cloudinary");
+      return null;
     }
   }
 
@@ -70,8 +44,7 @@ class CloudinaryService {
       console.log("Deleting file from Cloudinary:", fileUrl);
       if (!fileUrl) throw new Error("No URL provided");
 
-      const publicId = extractPublicId(fileUrl);
-
+      const publicId = this.extractPublicId(fileUrl);
       if (!publicId) throw new Error("Invalid Cloudinary URL");
 
       const response = await Cloudinary.uploader.destroy(publicId);
@@ -88,6 +61,22 @@ class CloudinaryService {
       throw error;
     }
   }
+
+  extractPublicId(fileUrl) {
+    try {
+      const url = new URL(fileUrl);
+      const pathname = url.pathname;
+      return pathname
+        .split("/")
+        .slice(2)
+        .join("/")
+        .replace(/\.[^/.]+$/, "");
+    } catch (error) {
+      console.error("Invalid Cloudinary URL:", fileUrl);
+      return null;
+    }
+  }
 }
+
 const cloudinaryService = new CloudinaryService();
 export default cloudinaryService;
