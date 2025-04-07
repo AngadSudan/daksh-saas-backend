@@ -18,4 +18,11 @@ TestingRouter.post("/generateSummarizedQuiz", async (req, res) => {
   reducesResponse = generatedResponse.replace("```", "");
   return res.send(reducesResponse);
 });
+
+TestingRouter.post("/chatbot", async (req, res) => {
+  const { question } = req.body;
+  const response = await AiFeatures.generateAnswer(question);
+  return res.send(response.response.candidates[0].content.parts[0].text);
+});
+
 export default TestingRouter;

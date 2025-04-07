@@ -272,7 +272,7 @@ const getPinnedTodos = async (req, res) => {
     if (!dbUser) throw new Error("User not found");
 
     const pinnedTodos = await prismaClient.todo.findMany({
-      where: { createdBy: user, isPinned: true, visibility: "VISIBLE" },
+      where: { createdBy: user, pinned: "PINNED", visibility: "VISIBLE" },
     });
     if (!pinnedTodos)
       return res
