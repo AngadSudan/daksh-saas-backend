@@ -14,21 +14,13 @@ const fileFilter = (req, file, cb) => {
   cb(null, true);
 };
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-
-const storage = multer.diskStorage({
-  destination: "./uploads/",
-  filename: (req, file, cb) => {
-    cb(
-      null,
-      file.fieldname + "-" + Date.now() + path.extname(file.originalname)
-    );
-  },
-});
+// Convert to Memory Storage instead of diskStorage
+const storage = multer.memoryStorage();
 
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
+  limits: { fileSize: 10 * 1024 * 1024 }, // Optional: Limit file size to 10MB
 });
 
 export default upload;
