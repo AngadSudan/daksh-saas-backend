@@ -1,8 +1,7 @@
 import { v2 as Cloudinary } from "cloudinary";
-import stream from "stream";
-import { promisify } from "util";
-
-const streamUpload = promisify(Cloudinary.uploader.upload_stream);
+import fs from "fs/promises";
+import os from "os";
+import path from "path";
 
 class CloudinaryService {
   constructor() {
@@ -13,29 +12,33 @@ class CloudinaryService {
     });
   }
 
-  async uploadToCloudinary(fileBuffer, fileFormat) {
+  async uploadToCloudinary(file, folder, filename) {
     try {
-      if (!fileBuffer) {
-        throw new Error("Invalid file buffer");
-      }
+      if (!file) throw new Error("No file provided");
 
-      const uploadStream = stream.PassThrough(); // Create a stream for Cloudinary upload
-      const uploadPromise = streamUpload(uploadStream, {
+      const tempDir = os.tmpdir();
+      const tempFilePath = path.join(tempDir, file.originalname);
+
+      const buffer = Buffer.from(await file.buffer);
+      await fs.writeFile(tempFilePath, buffer);
+
+      const mimeType = file.mimetype;
+
+      // Upload the file to Cloudinary
+      const response = await Cloudinary.uploader.upload(tempFilePath, {
         resource_type: "auto",
-        format: fileFormat, // Optional: specify format (jpg, png, etc.)
+        flags: "attachment",
+        folder: folder,
+        public_id: filename,
         access_mode: "public",
       });
 
-      uploadStream.end(fileBuffer); // Write the file buffer to stream
-
-      const response = await uploadPromise;
-      if (!response) return null;
-      console.log("File uploaded successfully:", response.secure_url);
+      await fs.unlink(tempFilePath);
 
       return response.secure_url;
     } catch (error) {
-      console.error("Error uploading to Cloudinary:", error);
-      return null;
+      console.error("Error during Cloudinary upload:", error);
+      throw error;
     }
   }
 

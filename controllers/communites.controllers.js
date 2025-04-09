@@ -548,8 +548,7 @@ const addChapterToSubject = async (req, res) => {
 //cloudinary / s3 stuff to be done
 const addNotesToChapters = async (req, res) => {
   try {
-    console.log(req.file);
-
+    console.log(req);
     if (!req.file) {
       return res
         .status(400)
@@ -572,13 +571,11 @@ const addNotesToChapters = async (req, res) => {
 
     if (!dbChapter) throw new Error("No such chapter found in the database");
 
-    // Upload file to Cloudinary using buffer
-    const fileBuffer = req.file.buffer;
-    const fileFormat = req.file.mimetype.split("/")[1]; // Extract file format
-
+    const uniqueFilename = `${req.file.originalname}_${Date.now()}`;
     const fileLink = await cloudinaryService.uploadToCloudinary(
-      fileBuffer,
-      fileFormat
+      req.file,
+      "notes",
+      uniqueFilename
     );
     console.log(fileLink);
 

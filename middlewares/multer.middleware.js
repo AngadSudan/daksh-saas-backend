@@ -15,12 +15,16 @@ const fileFilter = (req, file, cb) => {
 };
 
 // Convert to Memory Storage instead of diskStorage
-const storage = multer.memoryStorage();
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+const storage = multer.memoryStorage(); // Store the file in memory
 
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: { fileSize: 10 * 1024 * 1024 }, // Optional: Limit file size to 10MB
+  limits: {
+    fileSize: 5 * 1024 * 1024, // 5MB limit
+  },
 });
 
 export default upload;
