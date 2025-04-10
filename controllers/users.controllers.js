@@ -222,13 +222,92 @@ const getUserByEmail = async (req, res) => {
         email: true,
       },
     });
-    if (!dbUser) throw new Error("User not found");
+    if (!dbUser)
+      return res.status(200).json(new ApiResponse(200, "User found"));
 
     return res.status(200).json(new ApiResponse(200, "User found", dbUser));
   } catch (error) {
     console.log(error);
     return res
       .status(500)
+      .json(
+        new ApiResponse(500, error.message || "Internal Server Error", null)
+      );
+  }
+};
+
+const getUserInsights = async (req, res) => {
+  const user = req.user.id;
+  try {
+    if (!user) throw new Error("no user token id found");
+    const dbUser = await prismaClient.user.findUnique({
+      where: { id: user },
+    });
+    if (!dbUser) throw new Error("user not found");
+    console.log("user found");
+    let totalCommunities = 0;
+    let completedTodos = 0;
+
+    const getAllTodos = await prismaClient.todo.findMany({
+      where: { createdBy: user, visibility: "VISIBLE" },
+    });
+    console.log("user todos are ", getAllTodos);
+    // if(!getAllTodos) throw new Error("no todos found");
+    //calculate all completed and incomplete todos
+    getAllTodos.forEach((todo) => {
+      if (todo.status === "COMPLETED") {
+        completedTodos++;
+      }
+    });
+
+    //get todos where the deadline is less than 2 days;
+    const todosWithDeadlineLessThanTwoDays = getAllTodos.filter((todo) => {
+      const deadline = new Date(todo.deadline);
+      const today = new Date();
+      const diffTime = deadline - today;
+      const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      return diffDays <= 2; // Filter todos with deadline within the next 2 days
+    });
+    console.log("deadline todos : ", todosWithDeadlineLessThanTwoDays);
+
+    const userCommunities = await prismaClient.community.findMany({
+      where: {
+        OR: [
+          {
+            AND: [{ createdBy: user }, { visible: "VISIBLE" }],
+          },
+          {
+            participants: {
+              some: { userId: user },
+            },
+          },
+        ],
+      },
+    });
+    console.log(userCommunities);
+    totalCommunities = userCommunities.length;
+
+    console.log({
+      AllTodos: getAllTodos.length,
+      CompletedTodos: completedTodos,
+      deadlineTodo: todosWithDeadlineLessThanTwoDays,
+      totalCommunities: totalCommunities,
+      userCommunities: userCommunities,
+    });
+
+    return res.status(200).json(
+      new ApiResponse(200, "user insights generated", {
+        AllTodos: getAllTodos.length,
+        CompletedTodos: completedTodos,
+        deadlineTodo: todosWithDeadlineLessThanTwoDays,
+        totalCommunities: totalCommunities,
+        userCommunities: userCommunities,
+      })
+    );
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
       .json(
         new ApiResponse(500, error.message || "Internal Server Error", null)
       );
@@ -244,4 +323,5 @@ export {
   resetPassword,
   updateUserProfile,
   getUserByEmail,
+  getUserInsights,
 };
