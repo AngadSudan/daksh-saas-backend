@@ -38,7 +38,7 @@ const registerUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res
-      .status(500)
+      .status(200)
       .json(
         new ApiResponse(500, error.message || "Internal Server Error", null)
       );
@@ -94,7 +94,7 @@ const loginUser = async (req, res) => {
   } catch (error) {
     console.log(error);
     return res
-      .status(500)
+      .status(200)
       .json(
         new ApiResponse(500, error.message || "Internal Server Error", null)
       );

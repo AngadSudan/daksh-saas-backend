@@ -3,7 +3,7 @@ import path from "path";
 import multer from "multer";
 
 const fileFilter = (req, file, cb) => {
-  const allowedExtensions = /\.(pdf|pptx|png|jpg|jpeg)$/i; // Case-insensitive
+  const allowedExtensions = /\.(pdf|pptx|ppt|png|jpg|jpeg)$/i; // Case-insensitive
 
   if (!allowedExtensions.test(file.originalname)) {
     req.fileValidationError =
