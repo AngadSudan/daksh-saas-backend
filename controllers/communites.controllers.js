@@ -726,6 +726,33 @@ const getNotesById = async (req, res) => {
       );
   }
 };
+
+const getSummarizedData = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (!id) throw new Error("no such note found");
+    console.log(id);
+    const fetchedSummary = await prismaClient.summarizedContent.findUnique({
+      where: { id },
+      include: {
+        notes: true,
+      },
+    });
+    if (!fetchedSummary)
+      return res.status(200).json(new ApiResponse(200, "no summary found", {}));
+
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Success", fetchedSummary));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json(
+        new ApiResponse(500, error.message || "Internal Server Error", null)
+      );
+  }
+};
 export {
   getCommunitiesByUser,
   getNotesById,
@@ -747,4 +774,5 @@ export {
   updateChaptersInSubjects,
   removeChapterFromSubject,
   getNotesForChapters,
+  getSummarizedData,
 };

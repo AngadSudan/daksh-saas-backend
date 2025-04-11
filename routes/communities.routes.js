@@ -16,6 +16,7 @@ import {
   addChapterToSubject,
   addNotesToChapters,
   getNotesForChapters,
+  getSummarizedData,
   updateNotesToChapter,
   removeNotesFromChapter,
   updateChaptersInSubjects,
@@ -83,4 +84,5 @@ communityRouter.get(
   getNotesForChapters
 );
 communityRouter.get("/get-by-notes-id/:notesid", verifyJWT, getNotesById);
+communityRouter.get("/summary/:id", getSummarizedData);
 export default communityRouter;
