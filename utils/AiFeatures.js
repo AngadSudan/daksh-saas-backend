@@ -36,7 +36,7 @@ class AiFeatures {
         Ensure the response does not alter the intended meaning of the content. If the document contains equations or figures, briefly describe their significance instead of ignoring them.
         Here's the text response: ${text}`;
     const response = await this.model.generateContent(prompt);
-    return response;
+    return response.response.candidates[0].content.parts[0].text;
   }
 
   async generateSummarizedQuiz(text) {
@@ -88,7 +88,7 @@ class AiFeatures {
         Ensure consistency in formatting and valid JSON syntax.
         Output only valid JSON with no extra text or explanation. Here's the text response: ${text}`;
     const response = await this.model.generateContent(prompt);
-    return response;
+    return response.response.candidates[0].content.parts[0].text;
   }
   async generateAnswer(question) {
     const prompt = `Purpose: This AI chatbot is designed to provide concise, accurate, and study-related answers while maintaining a polite and professional tone.

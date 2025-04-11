@@ -1,6 +1,6 @@
 import prismaClient from "../utils/db.js";
 import ApiResponse from "../utils/ApiResponse.js";
-
+import ExtractTextAndGenerateSummary from "../utils/textExtracter.js";
 //left to do
 // updateSubjectInCommunity,
 //   removeSubjectFromCommunity,
@@ -576,9 +576,9 @@ const addNotesToChapters = async (req, res) => {
       "notes",
       uniqueFilename
     );
-    console.log(fileLink);
-
-    if (!fileLink) throw new Error("Upload to Cloudinary failed");
+    const ExtractedText = await ExtractTextAndGenerateSummary(req.file);
+    console.log(ExtractedText);
+    //create data model for the
 
     // Save note details in the database
     const createdNote = await prismaClient.notes.create({
@@ -592,9 +592,19 @@ const addNotesToChapters = async (req, res) => {
 
     if (!createdNote) throw new Error("Note could not be created");
 
-    return res
-      .status(200)
-      .json(new ApiResponse(200, "Note created successfully", createdNote));
+    const createdQuiz = await prismaClient.summarizedContent.create({
+      data: {
+        notesId: createdNote.id,
+        summary: ExtractedText.text,
+        quiz: ExtractedText.questions,
+      },
+    });
+    return res.status(200).json(
+      new ApiResponse(200, "Note created successfully", {
+        createdNote,
+        ...ExtractedText,
+      })
+    );
   } catch (error) {
     console.error(error);
     return res
@@ -699,6 +709,9 @@ const getNotesById = async (req, res) => {
 
     const dbNotes = await prismaClient.notes.findUnique({
       where: { id: noteid },
+      include: {
+        summary: true,
+      },
     });
 
     if (!dbNotes)
