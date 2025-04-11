@@ -1,4 +1,4 @@
-import PDF from "pdf-parse";
+// import PDF from "pdf-parse";
 import PPTX2Json from "pptx2json";
 import AiFeatures from "./AiFeatures.js";
 
@@ -10,9 +10,8 @@ const ExtractTextAndGenerateSummary = async (file) => {
 
     let extractedText = "";
     if (mimeType === "application/pdf") {
-      const pdfData = await PDF(await file.buffer);
-
-      extractedText = pdfData.text;
+      // const pdfData = await PDF(await file.buffer);
+      // extractedText = pdfData.text;
     } else if (
       //extract via pptx-parse
       mimeType ===
