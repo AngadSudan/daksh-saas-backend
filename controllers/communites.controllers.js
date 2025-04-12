@@ -577,11 +577,6 @@ const addNotesToChapters = async (req, res) => {
       uniqueFilename
     );
     console.log("file link", fileLink);
-    const ExtractedText = await ExtractTextAndGenerateSummary(req.file);
-    console.log(ExtractedText);
-    //create data model for the
-
-    // Save note details in the database
     const createdNote = await prismaClient.notes.create({
       data: {
         title,
@@ -590,20 +585,20 @@ const addNotesToChapters = async (req, res) => {
         documentLink: fileLink,
       },
     });
+    const ExtractedText = ExtractTextAndGenerateSummary(
+      req.file,
+      createdNote.id
+    );
+    console.log(ExtractedText);
+    //create data model for the
+
+    // Save note details in the database
 
     if (!createdNote) throw new Error("Note could not be created");
 
-    const createdQuiz = await prismaClient.summarizedContent.create({
-      data: {
-        notesId: createdNote.id,
-        summary: ExtractedText.text,
-        quiz: ExtractedText.questions,
-      },
-    });
     return res.status(200).json(
       new ApiResponse(200, "Note created successfully", {
         createdNote,
-        ...ExtractedText,
       })
     );
   } catch (error) {

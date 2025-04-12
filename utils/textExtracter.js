@@ -1,8 +1,8 @@
 import PDF from "pdf-parse-debugging-disabled";
 import PPTX2Json from "pptx2json";
 import AiFeatures from "./AiFeatures.js";
-
-const ExtractTextAndGenerateSummary = async (file) => {
+import prismaClient from "./db.js";
+const ExtractTextAndGenerateSummary = async (file, noteid) => {
   try {
     if (!file) throw new Error("No file provided");
     console.log("file is", file);
@@ -44,7 +44,13 @@ const ExtractTextAndGenerateSummary = async (file) => {
       throw new Error("Error in getting response from AI features");
     if (!generatedQuestions)
       throw new Error("Error in getting response from AI features");
-    return { text: summarizedText, questions: generatedQuestions };
+    const createdQuiz = await prismaClient.summarizedContent.create({
+      data: {
+        notesId: noteid,
+        summary: summarizedText,
+        quiz: generatedQuestions,
+      },
+    });
   } catch (error) {
     console.log(error);
     return null;
