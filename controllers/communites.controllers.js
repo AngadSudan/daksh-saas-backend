@@ -576,6 +576,7 @@ const addNotesToChapters = async (req, res) => {
       "notes",
       uniqueFilename
     );
+    console.log("file link", fileLink);
     const ExtractedText = await ExtractTextAndGenerateSummary(req.file);
     console.log(ExtractedText);
     //create data model for the
