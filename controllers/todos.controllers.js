@@ -37,7 +37,7 @@ const getTodosByUser = async (req, res) => {
 //creating a new todo
 const createTodo = async (req, res) => {
   try {
-    const { title, description, deadline } = req.body;
+    const { title, description, deadline, priority } = req.body;
     const user = req.user.id;
     if (!title) throw new Error("please enter a title");
     if (!description) throw new Error("please enter a description");
@@ -56,6 +56,7 @@ const createTodo = async (req, res) => {
         title,
         description,
         deadline: new Date(deadline),
+        priority: priority ?? "LOW",
       },
     });
 
