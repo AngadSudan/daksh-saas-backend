@@ -27,7 +27,7 @@ class CloudinaryService {
       // Upload the file to Cloudinary
       const response = await Cloudinary.uploader.upload(tempFilePath, {
         resource_type: "auto",
-        flags: "attachment",
+        // flags: "attachment",
         folder: folder,
         public_id: filename,
         access_mode: "public",

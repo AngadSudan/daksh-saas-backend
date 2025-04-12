@@ -20,8 +20,8 @@ TestingRouter.post("/generateSummarizedQuiz", async (req, res) => {
 });
 
 TestingRouter.post("/chatbot", async (req, res) => {
-  const { question } = req.body;
-  const response = await AiFeatures.generateAnswer(question);
+  const { question, prevConversation } = req.body;
+  const response = await AiFeatures.generateAnswer(question, prevConversation);
   return res.send(response.response.candidates[0].content.parts[0].text);
 });
 

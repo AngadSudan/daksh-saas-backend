@@ -90,9 +90,10 @@ class AiFeatures {
     const response = await this.model.generateContent(prompt);
     return response.response.candidates[0].content.parts[0].text;
   }
-  async generateAnswer(question) {
-    const prompt = `Purpose: This AI chatbot is designed to provide concise, accurate, and study-related answers while maintaining a polite and professional tone.
+  async generateAnswer(question, prevConversation) {
+    const prompt = `Purpose: This AI chatbot is designed by Daksh to provide concise, accurate, and study-related answers while maintaining a polite and professional tone.
       Functionality Guidelines:
+      The administration contact details are :- contact.daksh@gmail.com
       Question Handling:
       The chatbot should answer questions in less than 100 words.
       Responses must strictly pertain to academic or study-related topics.
@@ -113,6 +114,7 @@ class AiFeatures {
       Efficiently handle irrelevant queries to keep the focus on learning.
   
       Here's the Question-${question}
+      and this is the previous conversation that occured -${prevConversation}
       `;
 
     const response = await this.model.generateContent(prompt);
