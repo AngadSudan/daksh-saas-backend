@@ -116,12 +116,12 @@ app.get("/health", async (req, res) => {
     success: true,
     message: "Server is healthy!",
     timestamp: new Date(),
-    environment: ENV_VARS.NODE_ENV,
+    environment: process.env.NODE_ENV,
     memory: process.memoryUsage(),
     uptime: process.uptime(),
     dbStatus:
       mongoose.connection.readyState === 1 ? "connected" : "disconnected",
-    FRONTEND_URL: ENV_VARS.FRONTEND_URL,
+    FRONTEND_URL: process.env.FRONTEND_URL,
   });
 });
 
