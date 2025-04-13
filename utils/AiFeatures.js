@@ -14,6 +14,7 @@ class AiFeatures {
         Given a PDF, extract the key information, including definitions, explanations, and key takeaways.
         Ensure the summary is concise yet informative, structured in paragraphs or bullet points, and easy to understand.
         Retain essential technical terms but simplify complex sentences.
+        Incase if the user feels demotivated, provide a motivational quote to uplift their spirits.
         If the document contains examples or case studies, summarize their key insights instead of omitting them.
         Make sure to include:
 
