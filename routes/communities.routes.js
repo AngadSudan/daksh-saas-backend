@@ -10,17 +10,12 @@ import {
   removeParticipantsFromCommunity,
   addSubjectToCommunity,
   getSubjectsAndChaptersPerCommunity,
-  updateSubjectInCommunity,
-  removeSubjectFromCommunity,
   getNotesById,
   addChapterToSubject,
   addNotesToChapters,
   getNotesForChapters,
   getSummarizedData,
-  updateNotesToChapter,
-  removeNotesFromChapter,
-  updateChaptersInSubjects,
-  removeChapterFromSubject,
+  getAllUsers,
 } from "../controllers/communites.controllers.js";
 
 import upload from "../middlewares/multer.middleware.js";
@@ -29,6 +24,7 @@ import verifyJWT from "../middlewares/auth.middlewares.js";
 const communityRouter = Router();
 
 // tested
+communityRouter.get("/get-all-users/:id", getAllUsers);
 communityRouter.get("/get-user-communities", verifyJWT, getCommunitiesByUser);
 //tested
 communityRouter.get("/communities/:communityid", verifyJWT, getCommunityById);

@@ -545,6 +545,40 @@ const addChapterToSubject = async (req, res) => {
   }
 };
 
+const getAllUsers = async (req, res) => {
+  const { id: communityId } = req.params;
+  try {
+    const dbCommunity = await prismaClient.community.findUnique({
+      where: {
+        id: communityId,
+      },
+    });
+    if (!communityId) throw new Error("no Such user community Found");
+    const communityParticipants =
+      await prismaClient.communityParticipants.findMany({
+        where: { communityId: dbCommunity.id },
+        include: {
+          user: true,
+        },
+      });
+
+    if (!communityId)
+      return res
+        .status(200)
+        .json(new ApiResponse(200, "No Participant Yet", []));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "participants found", communityParticipants));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(500, error.message || "Internal Server Error", null)
+      );
+  }
+};
+
 //cloudinary / s3 stuff to be done
 const addNotesToChapters = async (req, res) => {
   try {
@@ -771,4 +805,5 @@ export {
   removeChapterFromSubject,
   getNotesForChapters,
   getSummarizedData,
+  getAllUsers,
 };

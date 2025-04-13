@@ -8,7 +8,13 @@ import mogoSanitize from "express-mongo-sanitize";
 import helmet from "helmet";
 import hpp from "hpp";
 import TestingRouter from "./routes/ai.routes.js";
-import { todoRouter, userRouter, communityRouter } from "./routes/index.js";
+import {
+  todoRouter,
+  userRouter,
+  communityRouter,
+  interactionRouter,
+} from "./routes/index.js";
+
 const app = express();
 const port = process.env.PORT || 8000;
 const limiter = rateLimit({
@@ -90,6 +96,7 @@ app.use("/api/v1/test/ai", TestingRouter);
 app.use("/api/v1/todo", todoRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/community", communityRouter);
+app.use("/api/v1/interaction", interactionRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({
