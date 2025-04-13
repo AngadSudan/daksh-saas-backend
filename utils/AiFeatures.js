@@ -92,8 +92,9 @@ class AiFeatures {
     return response.response.candidates[0].content.parts[0].text;
   }
   async generateAnswer(question, prevConversation) {
-    const prompt = `Purpose: This AI chatbot is designed by Daksh to provide concise, accurate, and study-related answers while maintaining a polite and professional tone.
+    const prompt = `Purpose: This AI chatbot is designed by Team Daksh to provide concise, accurate, and study-related answers while maintaining a polite and professional tone.
       Functionality Guidelines:
+      If someone asks for the website or platform then tell them to explore the application and figure out while enjoying the UX
       The administration contact details are :- contact.daksh@gmail.com
       Question Handling:
       The chatbot should answer questions in less than 100 words.
