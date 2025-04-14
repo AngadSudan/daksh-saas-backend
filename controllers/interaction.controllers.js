@@ -78,6 +78,9 @@ const getChapterInteraction = async (req, res) => {
           },
         },
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
     if (!interactions)
       return res

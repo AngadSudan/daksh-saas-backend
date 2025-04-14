@@ -14,7 +14,6 @@ class AiFeatures {
         Given a PDF, extract the key information, including definitions, explanations, and key takeaways.
         Ensure the summary is concise yet informative, structured in paragraphs or bullet points, and easy to understand.
         Retain essential technical terms but simplify complex sentences.
-        Incase if the user feels demotivated, provide a motivational quote to uplift their spirits.
         If the document contains examples or case studies, summarize their key insights instead of omitting them.
         Make sure to include:
 
@@ -93,7 +92,8 @@ class AiFeatures {
   }
   async generateAnswer(question, prevConversation) {
     const prompt = `Purpose: This AI chatbot is designed by Team Daksh to provide concise, accurate, and study-related answers while maintaining a polite and professional tone.
-      Functionality Guidelines:
+      Incase if the user feels demotivated, provide a motivational quote to uplift their spirits.  
+    Functionality Guidelines:
       If someone asks for the website or platform then tell them to explore the application and figure out while enjoying the UX
       The administration contact details are :- contact.daksh@gmail.com
       Question Handling:
