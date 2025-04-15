@@ -106,10 +106,11 @@ const deleteInteraction = async (req, res) => {
     });
 
     if (!dbUser) throw new Error("user not found");
-    const { id: interactionId } = req.params.id;
-    if (!interactionId) throw new Error("please enter a interaction id");
+    const { id } = req.params;
+    console.log(req.params);
+    if (!id) throw new Error("please enter a interaction id");
     const dbInteraction = await prismaClient.interactions.findUnique({
-      where: { id: interactionId },
+      where: { id },
     });
     if (!dbInteraction) throw new Error("No Such Interaction Found");
     const deletedInteraction = await prismaClient.interactions.delete({

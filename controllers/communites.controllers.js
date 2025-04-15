@@ -307,8 +307,7 @@ const addParticipantsToCommunity = async (req, res) => {
 
 const removeParticipantsFromCommunity = async (req, res) => {
   try {
-    const { userid } = req.body;
-    const { communityid } = req.params;
+    const { communityid, userid } = req.params;
     const user = req.user.id;
 
     if (!user) throw new Error("no admin user token found");
@@ -320,29 +319,34 @@ const removeParticipantsFromCommunity = async (req, res) => {
     });
     if (!dbCommunity) throw new Error("no such community found");
 
-    const AdminUser = await prismaClient.communityParticipants.findUnique({
-      where: {
-        AND: [{ communityId: communityid }, { id: user }],
-      },
-    });
+    // const AdminUser = await prismaClient.communityParticipants.findUnique({
+    //   where: {
+    //     userId_communityId: {
+    //       userId: user.id,
+    //       communityId: communityid,
+    //     },
+    //   },
+    // });
 
-    if (!AdminUser)
-      throw new Error("no admin user found with the given token id");
-    if (AdminUser.role !== "ADMIN")
-      throw new Error("only admin can remove participants from the community");
+    // if (!AdminUser)
+    //   throw new Error("no admin user found with the given token id");
+    // if (AdminUser.role !== "ADMIN")
+    //   throw new Error("only admin can remove participants from the community");
 
     if (!userid) throw new Error("no participant token found");
     const dbUser = await prismaClient.user.findUnique({
-      where: { id: userid },
+      where: { id: req.user.id },
     });
     if (!dbUser) throw new Error("no such participant found");
 
     if (dbCommunity.createdBy === dbUser.id)
       throw new Error("Owner cannot be removed from the community");
 
-    const deletedMember = await prismaClient.communityParticipants.delete({
+    const deletedMember = await prismaClient.communityParticipants.deleteMany({
       where: {
-        AND: [{ userId: dbUser.id }, { communityId: dbCommunity.id }],
+        // userId: dbUser.id,
+        // communityId: dbCommunity.id,
+        id: userid,
       },
     });
 

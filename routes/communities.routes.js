@@ -55,7 +55,7 @@ communityRouter.post(
 );
 
 communityRouter.delete(
-  "/communities/:communityid/participants",
+  "/communities/:communityid/participants/:userid",
   verifyJWT,
   removeParticipantsFromCommunity
 );
