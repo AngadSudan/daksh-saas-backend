@@ -13,6 +13,7 @@ import {
   getNotesById,
   addChapterToSubject,
   addNotesToChapters,
+  createQuizFromNotes,
   getNotesForChapters,
   getSummarizedData,
   getAllUsers,
@@ -74,6 +75,7 @@ communityRouter.post(
   upload.single("notes"),
   addNotesToChapters
 );
+
 communityRouter.get(
   "/chapter/:chapterid/notes",
   verifyJWT,
@@ -81,4 +83,5 @@ communityRouter.get(
 );
 communityRouter.get("/get-by-notes-id/:notesid", verifyJWT, getNotesById);
 communityRouter.get("/summary/:id", getSummarizedData);
+communityRouter.post("/create-quiz/:id", verifyJWT, createQuizFromNotes);
 export default communityRouter;

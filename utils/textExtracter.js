@@ -2,7 +2,7 @@ import PDF from "pdf-parse-debugging-disabled";
 import PPTX2Json from "pptx2json";
 import AiFeatures from "./AiFeatures.js";
 import prismaClient from "./db.js";
-const ExtractTextAndGenerateSummary = async (file, noteid) => {
+const ExtractTextAndGenerateSummary = async (file, noteid, number) => {
   try {
     if (!file) throw new Error("No file provided");
     console.log("file is", file);
@@ -38,8 +38,10 @@ const ExtractTextAndGenerateSummary = async (file, noteid) => {
     }
     const summarizedText =
       await AiFeatures.generateSummarizedText(extractedText);
-    const generatedQuestions =
-      await AiFeatures.generateSummarizedQuiz(extractedText);
+    const generatedQuestions = await AiFeatures.generateSummarizedQuiz(
+      extractedText,
+      number ? number : 10
+    );
     if (!summarizedText)
       throw new Error("Error in getting response from AI features");
     if (!generatedQuestions)

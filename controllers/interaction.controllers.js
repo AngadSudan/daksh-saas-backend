@@ -1,5 +1,6 @@
 import prismaClient from "../utils/db.js";
 import ApiResponse from "../utils/ApiResponse.js";
+import primsaClient from "../utils/db.js";
 
 const registerInteraction = async (req, res) => {
   const user = req.user.id;
@@ -194,10 +195,154 @@ const getDoubts = async (req, res) => {
       );
   }
 };
+
+const getQuiz = async (req, res) => {
+  const user = req.user.id;
+  try {
+    const { id } = req.params;
+    const dbUser = await primsaClient.user.findUnique({
+      where: { id: user },
+    });
+    if (!dbUser) throw new Error("user not found");
+    if (!id) throw new Error("please enter a quiz id");
+    const dbQuiz = await prismaClient.quiz.findUnique({
+      where: { id },
+      include: {
+        questions: true,
+      },
+    });
+
+    const dbQuestions = await prismaClient.question.findMany({
+      where: { quizId: id },
+    });
+
+    if (!dbQuiz) throw new Error("No Such Quiz Found");
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Quiz Found", { dbQuiz, dbQuestions }));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(500, error.message || "something went wrong", null)
+      );
+  }
+};
+
+const getAllQuiz = async (req, res) => {
+  try {
+    const { id: noteid } = req.params;
+    const user = req.user.id;
+
+    const dbUser = await prismaClient.user.findUnique({
+      where: { id: user },
+    });
+
+    if (!dbUser) throw new Error("user not found");
+    if (!noteid) throw new Error("please enter a note id");
+
+    const dbQuiz = await prismaClient.quiz.findMany({
+      where: { notesId: noteid },
+    });
+
+    if (!dbQuiz)
+      return res.status(200).json(new ApiResponse(200, "No Quiz Found", []));
+    return res.status(200).json(new ApiResponse(200, "Quiz Found", dbQuiz));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(500, error.message || "something went wrong", null)
+      );
+  }
+};
+const getAllOnlineQuiz = async (req, res) => {
+  try {
+    const { id: noteid } = req.params;
+    const user = req.user.id;
+
+    const dbUser = await prismaClient.user.findUnique({
+      where: { id: user, isLive: "ONLINE" },
+    });
+
+    if (!dbUser) throw new Error("user not found");
+    if (!noteid) throw new Error("please enter a note id");
+
+    const dbQuiz = await prismaClient.quiz.findMany({
+      where: { notesId: noteid },
+    });
+
+    if (!dbQuiz)
+      return res.status(200).json(new ApiResponse(200, "No Quiz Found", []));
+    return res.status(200).json(new ApiResponse(200, "Quiz Found", dbQuiz));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(500, error.message || "something went wrong", null)
+      );
+  }
+};
+const submitQuiz = async (req, res) => {
+  const { id: quizid } = req.params;
+  const {
+    totalQuestion,
+    totalAttemptedQuestion,
+    totalCorrectQuestion,
+    totalWrongQuestion,
+  } = req.body;
+  try {
+    const user = req.user.id;
+    const dbUser = await prismaClient.user.findUnique({
+      where: { id: user },
+    });
+    if (!dbUser) throw new Error("user not found");
+    if (!quizid) throw new Error("please enter a quiz id");
+
+    const dbQuiz = await prismaClient.quiz.findUnique({
+      where: { id: quizid },
+    });
+
+    if (!dbQuiz) throw new Error("No Such Quiz Found");
+
+    const dbAnswers = await prismaClient.submission.create({
+      data: {
+        quizId: dbQuiz.id,
+        userId: dbUser.id,
+        totalQuestion,
+        totalAttemptedQuestion,
+        totalCorrectQuestion,
+        totalWrongQuestion,
+      },
+    });
+
+    if (!dbAnswers) throw new Error("Unable to submit answers");
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Answers Submitted", dbAnswers));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(500, error.message || "something went wrong", null)
+      );
+  }
+};
 export {
   registerInteraction,
   getChapterInteraction,
   deleteInteraction,
   updateInteraction,
   getDoubts,
+  getQuiz,
+  getAllQuiz,
+  submitQuiz,
+  getAllOnlineQuiz,
 };
+
+//create quiz
+//update quiz details

@@ -11,6 +11,10 @@ enum Classification {
   ANNOUNCEMENT
   DOUBTS
 }
+enum Live {
+  ONLINE
+  OFFLINE
+}
 enum Pinned {
   PINNED
   UNPINNED
@@ -37,19 +41,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User{
-  id String @id @default(uuid())
-  name String 
-  email String @unique
-  password String 
-  notionToken String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  communities Community[]
-  communityParticipant CommunityParticipants[]
-  todos Todo[]
-  messages Interactions[]
+model User {
+  id                     String               @id @default(uuid())
+  name                   String
+  email                  String               @unique
+  password               String
+  notionToken            String?
+  createdAt              DateTime             @default(now())
+  updatedAt              DateTime             @updatedAt
+  communities            Community[]
+  communityParticipant   CommunityParticipants[]
+  todos                  Todo[]
+  messages               Interactions[]
+  
+  quizzes                Quiz[]
+  quizSubmissions        submission[]
 }
+
 
 model Community{
   id String @id @default(uuid())
@@ -102,15 +110,16 @@ model Chapters {
 }
 
 model Notes {
-  id String @id @default(uuid())
-  title String 
-  description String 
-  documentLink String 
-  ChaptersId String 
-  summary SummarizedContent?
-  chapters Chapters @relation(fields: [ChaptersId],references: [id],onDelete: Cascade)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                     String              @id @default(uuid())
+  title                  String
+  description            String
+  documentLink           String
+  ChaptersId             String
+  summary                SummarizedContent?
+  chapters               Chapters            @relation(fields: [ChaptersId], references: [id], onDelete: Cascade)
+  createdAt              DateTime            @default(now())
+  updatedAt              DateTime            @updatedAt
+  quiz                   Quiz[]
 }
 
 model Todo{
@@ -148,4 +157,48 @@ model Interactions {
   messageType Classification @default(ANNOUNCEMENT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+
+model submission {
+  id                      String   @id @default(uuid())
+  userId                  String
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId                  String
+  quiz                    Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  totalQuestion           Int
+  totalAttemptedQuestion  Int
+  totalCorrectQuestion    Int
+  totalWrongQuestion      Int
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+
+
+model Quiz {
+  id          String     @id @default(uuid())
+  title       String
+  description String?
+  notesId     String
+  notes       Notes      @relation(fields: [notesId], references: [id], onDelete: Cascade)
+  createdBy   String
+  user        User       @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  questions   Question[]
+  submissions submission[]
+  isLive      Live        @default(OFFLINE)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+}
+
+model Question {
+  id         String   @id @default(uuid())
+  quizId     String
+  quiz       Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  question   String
+  options    String[] // array of options
+  answers    String // array of correct answers
+  visibility Visibility @default(VISIBLE)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }

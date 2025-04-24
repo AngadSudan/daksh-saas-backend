@@ -11,6 +11,8 @@ import ExtractTextAndGenerateSummary from "../utils/textExtracter.js";
 //   updateChaptersInSubjects,
 //   removeChapterFromSubject,
 import cloudinaryService from "../utils/fileUpload.js";
+import primsaClient from "../utils/db.js";
+import AiFeatures from "../utils/AiFeatures.js";
 //Community Operations
 const getCommunitiesByUser = async (req, res) => {
   try {
@@ -787,8 +789,78 @@ const getSummarizedData = async (req, res) => {
       );
   }
 };
+
+const createQuizFromNotes = async (req, res) => {
+  try {
+    const { id: noteid } = req.params;
+    const user = req.user.id;
+    const { number, title, description } = req.body;
+
+    // "question": "What is the value of x in 2x + 3 = 7?",
+    //   "options": ["1", "2", "3", "4"],
+    //   "answers": ["2"],
+    const notesInteraction = await prismaClient.summarizedContent.findMany({
+      where: { notesId: noteid },
+      include: {
+        notes: true,
+      },
+    });
+    // console.log(notesInteraction);
+
+    let quizResult = await AiFeatures.generateSummarizedQuiz(
+      notesInteraction[0].summary,
+      number
+    );
+    quizResult = quizResult.replaceAll("```", "'");
+    quizResult = quizResult.replace("'json", "'");
+    quizResult = quizResult.replaceAll("`", "'");
+    quizResult = quizResult.replaceAll("'", "");
+    quizResult = JSON.parse(quizResult);
+
+    console.log(quizResult);
+    const createdQuiz = await prismaClient.quiz.create({
+      data: {
+        title: title,
+        description: description,
+        createdBy: user, // userId must be a String (User.id)
+        notesId: noteid, // noteid must be a String (Notes.id)
+      },
+    });
+    if (!createdQuiz) throw new Error("Quiz couldnot be created");
+    console.log("quiz created", createdQuiz);
+    console.log("quizResult", quizResult);
+    for (let i = 0; i < quizResult.quiz.single_correct.length; i++) {
+      console.log("question", quizResult.quiz.single_correct[i]);
+
+      const questions = await prismaClient.question.create({
+        data: {
+          question: quizResult.quiz.single_correct[i].question,
+          answers: quizResult.quiz.single_correct[i].answer,
+          options: quizResult.quiz.single_correct[i].options,
+          quizId: createdQuiz.id,
+        },
+      });
+      console.log("question creation started", questions);
+    }
+    // console.log("questions created", quizResult.quiz.single_correct);
+    return res.status(200).json(
+      new ApiResponse(200, "Quiz created successfully", {
+        quiz: quizResult,
+        createdQuiz: createdQuiz,
+      })
+    );
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(500)
+      .json(
+        new ApiResponse(500, error.message || "Internal Server Error", null)
+      );
+  }
+};
 export {
   getCommunitiesByUser,
+  createQuizFromNotes,
   getNotesById,
   getCommunityById,
   createCommunity,

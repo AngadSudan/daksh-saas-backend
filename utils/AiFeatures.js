@@ -20,12 +20,26 @@ class AiFeatures {
         Main concepts and core ideas
         Key definitions and important facts
         Explanations of critical points without excessive detail
-        Bullet points for clarity when needed
-        No loss of crucial information or misrepresentation of ideas
+        Please always give me response in JSON format for example :
+
+    [
+    
+        {
+            "data": "Your response here",
+            type: "paragraph"
+        },
+        {
+            data: "Your response here",
+            type: "heading1"
+        },{
+          data:"Your response here",
+          type: "heading2"
+        }
+
+    ]
+
+    In the code don't add code block delimiter or triple backtick Just give me the code.
         Format the response as follows:
-        less
-        Copy
-        Edit
         ## [Title of the Section]
         **Key Points:**  
         - [Summarized key idea 1]  
@@ -39,7 +53,7 @@ class AiFeatures {
     return response.response.candidates[0].content.parts[0].text;
   }
 
-  async generateSummarizedQuiz(text) {
+  async generateSummarizedQuiz(text, number) {
     const prompt = `
         "You are an AI specialized in text summarization and quiz generation. Given the extracted text from a PDF, perform the following tasks:
         1 Summarization: Generate a concise yet rich summary of the provided text while preserving its key details and concepts. Keep the summary informative, structured, and to the point.
@@ -50,33 +64,21 @@ class AiFeatures {
         Multiple Correct Answer MCQs (2 or more correct options)
         Ensure the questions cover different aspects of the summary and avoid repetition. The quiz should be returned in the following JSON format:
 
-        generate me 10 questions of each topic.
+        generate me ${number} questions of each topic.
         {   
         "quiz": {  
             "single_correct": [  
             {  
                 "question": "What is the main purpose of X?",  
                 "options": ["Option A", "Option B", "Option C", "Option D"],  
-                "correct_answer": "Option B"  
+                "answer": "Option B"  
             },  
             {  
                 "question": "Which statement is true about Y?",  
                 "options": ["Option A", "Option B", "Option C", "Option D"],  
-                "correct_answer": "Option C"  
+                "answer": "Option C"  
             }  
-            ],  
-            "multiple_correct": [  
-            {  
-                "question": "Which of the following are characteristics of Z?",  
-                "options": ["Option A", "Option B", "Option C", "Option D"],  
-                "correct_answers": ["Option A", "Option C"]  
-            },  
-            {  
-                "question": "What factors contribute to the growth of X?",  
-                "options": ["Option A", "Option B", "Option C", "Option D"],  
-                "correct_answers": ["Option B", "Option D"]  
-            }  
-            ]  
+            ] 
         }  
         }  
         Constraints & Guidelines:
