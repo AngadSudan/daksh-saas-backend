@@ -255,6 +255,7 @@ const joinCommunityByLink = async (req, res) => {
   }
 };
 
+//IF PARTICIPANT ALREADY ADDED THEN DONT ADD THE USER AGAIN
 const addParticipantsToCommunity = async (req, res) => {
   try {
     const { userId } = req.body;
@@ -307,6 +308,7 @@ const addParticipantsToCommunity = async (req, res) => {
   }
 };
 
+//TODO: UPDATE THE ROLE BASED SYSTEM
 const removeParticipantsFromCommunity = async (req, res) => {
   try {
     const { communityid, userid } = req.params;
@@ -341,8 +343,8 @@ const removeParticipantsFromCommunity = async (req, res) => {
     });
     if (!dbUser) throw new Error("no such participant found");
 
-    if (dbCommunity.createdBy === dbUser.id)
-      throw new Error("Owner cannot be removed from the community");
+    // if (dbCommunity.createdBy === dbUser.id)
+    //   throw new Error("Owner cannot be removed from the community");
 
     const deletedMember = await prismaClient.communityParticipants.deleteMany({
       where: {
@@ -747,6 +749,11 @@ const getNotesById = async (req, res) => {
       where: { id: noteid },
       include: {
         summary: true,
+        chapters: {
+          include: {
+            subject: true,
+          },
+        },
       },
     });
 

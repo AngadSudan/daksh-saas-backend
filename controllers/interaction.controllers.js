@@ -244,6 +244,21 @@ const getAllQuiz = async (req, res) => {
 
     const dbQuiz = await prismaClient.quiz.findMany({
       where: { notesId: noteid },
+      include: {
+        notes: {
+          include: {
+            chapters: {
+              include: {
+                subject: {
+                  include: {
+                    community: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
     });
 
     if (!dbQuiz)
@@ -364,17 +379,25 @@ const toggleQuizStatus = async (req, res) => {
   }
 };
 const updateQuiz = async (req, res) => {
-  const { id: quizid } = req.params;
   try {
-    const { questions } = req.body;
+    const body = req.body;
+    let questions = body.questions;
+    console.log(questions);
+
     for (let i = 0; i < questions.length; i++) {
+      console.log(
+        "=================================================================="
+      );
+
       console.log(questions[i]);
-      const { question, options, answer } = questions[i];
+      const { question, options, answers } = questions[i];
+      console.log("correct answer is : ", answers);
+
       const updatedQuestion = await prismaClient.question.update({
         data: {
           question,
           options,
-          answer,
+          answers,
         },
         where: { id: questions[i].id },
       });
@@ -383,6 +406,9 @@ const updateQuiz = async (req, res) => {
       console.log("updatedQuestion", updatedQuestion);
 
       questions[i] = updatedQuestion;
+      console.log(
+        "=================================================================="
+      );
     }
     return res
       .status(200)
