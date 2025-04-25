@@ -24,8 +24,12 @@ TestingRouter.post("/generateSummarizedQuiz", async (req, res) => {
 });
 
 TestingRouter.post("/chatbot", async (req, res) => {
-  const { question, prevConversation } = req.body;
-  const response = await AiFeatures.generateAnswer(question, prevConversation);
+  const { question, prevConversation, text } = req.body;
+  const response = await AiFeatures.generateAnswer(
+    question,
+    prevConversation,
+    text
+  );
   return res.send(response.response.candidates[0].content.parts[0].text);
 });
 

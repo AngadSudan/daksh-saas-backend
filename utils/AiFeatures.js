@@ -92,7 +92,7 @@ class AiFeatures {
     const response = await this.model.generateContent(prompt);
     return response.response.candidates[0].content.parts[0].text;
   }
-  async generateAnswer(question, prevConversation) {
+  async generateAnswer(question, prevConversation, text) {
     const prompt = `Purpose: This AI chatbot is designed by Team Daksh to provide concise, accurate, and study-related answers while maintaining a polite and professional tone.
       Incase if the user feels demotivated, provide a motivational quote to uplift their spirits.  
     Functionality Guidelines:
@@ -118,7 +118,9 @@ class AiFeatures {
       Efficiently handle irrelevant queries to keep the focus on learning.
   
       Here's the Question-${question}
+      Here's the content of the pdf/pptx - ${text}
       and this is the previous conversation that occured -${prevConversation}
+      Dont add any ** or any * or use any symbols, instead of bullets add numbering. Talk in a general way keeping yourself valid to the pdf
       `;
 
     const response = await this.model.generateContent(prompt);

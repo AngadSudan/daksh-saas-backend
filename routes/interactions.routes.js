@@ -10,6 +10,8 @@ import {
   getAllQuiz,
   getQuiz,
   getAllOnlineQuiz,
+  updateQuiz,
+  toggleQuizStatus,
 } from "../controllers/interaction.controllers.js";
 const interactionRouter = Router();
 
@@ -34,4 +36,6 @@ interactionRouter.patch(
   updateInteraction
 );
 interactionRouter.post("/submit-quiz/:id", verfiyJWT, submitQuiz);
+interactionRouter.patch("/toggle-status/:id", verfiyJWT, toggleQuizStatus);
+interactionRouter.patch("/update-quiz/:id", verfiyJWT, updateQuiz);
 export default interactionRouter;

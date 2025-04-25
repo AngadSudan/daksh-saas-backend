@@ -332,6 +332,71 @@ const submitQuiz = async (req, res) => {
       );
   }
 };
+
+const toggleQuizStatus = async (req, res) => {
+  try {
+    const { id: quizid } = req.params;
+    const { status } = req.body;
+    const dbQuiz = await prismaClient.quiz.findUnique({
+      where: { id: quizid },
+    });
+
+    if (!dbQuiz) throw new Error("No Such Quiz Found");
+
+    const updatedQuiz = await prismaClient.quiz.update({
+      data: {
+        isLive: status,
+      },
+      where: { id: quizid },
+    });
+
+    if (!updatedQuiz) throw new Error("Unable to update quiz status");
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Quiz Status Updated", updatedQuiz));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(500, error.message || "something went wrong", null)
+      );
+  }
+};
+const updateQuiz = async (req, res) => {
+  const { id: quizid } = req.params;
+  try {
+    const { questions } = req.body;
+    for (let i = 0; i < questions.length; i++) {
+      console.log(questions[i]);
+      const { question, options, answer } = questions[i];
+      const updatedQuestion = await prismaClient.question.update({
+        data: {
+          question,
+          options,
+          answer,
+        },
+        where: { id: questions[i].id },
+      });
+
+      if (!updatedQuestion) throw new Error("Unable to update question");
+      console.log("updatedQuestion", updatedQuestion);
+
+      questions[i] = updatedQuestion;
+    }
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Quiz Updated", questions));
+  } catch (error) {
+    console.log(error);
+    return res
+      .status(200)
+      .json(
+        new ApiResponse(500, error.message || "something went wrong", null)
+      );
+  }
+};
+
 export {
   registerInteraction,
   getChapterInteraction,
@@ -342,6 +407,8 @@ export {
   getAllQuiz,
   submitQuiz,
   getAllOnlineQuiz,
+  toggleQuizStatus,
+  updateQuiz,
 };
 
 //create quiz

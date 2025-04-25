@@ -12,8 +12,9 @@ enum Classification {
   DOUBTS
 }
 enum Live {
-  ONLINE
-  OFFLINE
+  APPROVED
+  PUBLISHED
+  REJECTED
 }
 enum Pinned {
   PINNED
@@ -186,7 +187,7 @@ model Quiz {
   user        User       @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   questions   Question[]
   submissions submission[]
-  isLive      Live        @default(OFFLINE)
+  isLive      Live        @default(REJECTED)
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
 }
