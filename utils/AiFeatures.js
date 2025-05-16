@@ -95,7 +95,6 @@ class AiFeatures {
   async generateAnswer(question, prevConversation, text) {
     const prompt = `Purpose: This AI chatbot is designed by Team Daksh to provide concise, accurate, and study-related answers while maintaining a polite and professional tone.
       Incase if the user feels demotivated, provide a motivational quote to uplift their spirits.  
-      If the answer is not available in the document then check if the question is related to the topic in the document and provide a relevant answer.
     Functionality Guidelines:
       If someone asks for the website or platform then tell them to explore the application and figure out while enjoying the UX
       The administration contact details are :- contact.daksh@gmail.com
@@ -119,7 +118,6 @@ class AiFeatures {
       Efficiently handle irrelevant queries to keep the focus on learning.
   
       Here's the Question-${question}
-      Here's the content of the pdf/pptx - ${text}
       and this is the previous conversation that occured -${prevConversation}
       Dont add any ** or any * or use any symbols, instead of bullets add numbering.
       `;
