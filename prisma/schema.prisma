@@ -1,38 +1,3 @@
-
-enum Status {
-  PENDING
-  COMPLETED
-}
-enum Visibility {
-  VISIBLE
-  HIDDEN
-}
-enum Classification {
-  ANNOUNCEMENT
-  DOUBTS
-}
-enum Live {
-  APPROVED
-  PUBLISHED
-  REJECTED
-}
-enum Pinned {
-  PINNED
-  UNPINNED
-}
-
-enum Role {
-  SUPERADMIN
-  ADMIN 
-  USER
-}
-
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
-}
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -43,163 +8,195 @@ datasource db {
 }
 
 model User {
-  id                     String               @id @default(uuid())
-  name                   String
-  email                  String               @unique
-  password               String
-  notionToken            String?
-  createdAt              DateTime             @default(now())
-  updatedAt              DateTime             @updatedAt
-  communities            Community[]
-  communityParticipant   CommunityParticipants[]
-  todos                  Todo[]
-  messages               Interactions[]
-  
-  quizzes                Quiz[]
-  quizSubmissions        submission[]
+  id                   String                  @id @default(uuid())
+  name                 String
+  email                String                  @unique
+  password             String
+  notionToken          String?
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+  communities          Community[]
+  communityParticipant CommunityParticipants[]
+  messages             Interactions[]
+  quizzes              Quiz[]
+  todos                Todo[]
+  quizSubmissions      submission[]
 }
 
-
-model Community{
-  id String @id @default(uuid())
-  name String 
-  description String 
-  logoUrl String? 
-  websiteUrl String?
-  createdBy String 
-  visible Visibility @default(VISIBLE)
-  user User @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  subjects Subjects[]
+model Community {
+  id           String                  @id @default(uuid())
+  name         String
+  description  String
+  logoUrl      String?
+  websiteUrl   String?
+  createdBy    String
+  visible      Visibility              @default(VISIBLE)
+  createdAt    DateTime                @default(now())
+  updatedAt    DateTime                @updatedAt
+  user         User                    @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   participants CommunityParticipants[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-model CommunityParticipants{
-  id String @id @default(uuid())
-  role Role @default(USER)
-
-  communityId String 
-  community Community @relation(fields: [communityId],references: [id],onDelete: Cascade)
-
-  userId String
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  subjects     Subjects[]
 }
 
-model Subjects{
-  id String @id @default(uuid())
-  communityId String 
-  community Community @relation(fields:[communityId],references: [id],onDelete: Cascade)
-  name String 
+model CommunityParticipants {
+  id          String    @id @default(uuid())
+  role        Role      @default(USER)
+  communityId String
+  userId      String
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  community   Community @relation(fields: [communityId], references: [id], onDelete: Cascade)
+  user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Subjects {
+  id          String     @id @default(uuid())
+  communityId String
+  name        String
   description String?
-  chapters Chapters[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  chapters    Chapters[]
+  community   Community  @relation(fields: [communityId], references: [id], onDelete: Cascade)
 }
 
 model Chapters {
-  id String @id @default(uuid())
-  subjectId String 
-  subject Subjects @relation(fields: [subjectId],references: [id], onDelete: Cascade)
-  name String
-  notes Notes[]
-  messages Interactions[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt 
+  id        String         @id @default(uuid())
+  subjectId String
+  name      String
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  subject   Subjects       @relation(fields: [subjectId], references: [id], onDelete: Cascade)
+  messages  Interactions[]
+  notes     Notes[]
 }
 
 model Notes {
-  id                     String              @id @default(uuid())
-  title                  String
-  description            String
-  documentLink           String
-  ChaptersId             String
-  summary                SummarizedContent?
-  chapters               Chapters            @relation(fields: [ChaptersId], references: [id], onDelete: Cascade)
-  createdAt              DateTime            @default(now())
-  updatedAt              DateTime            @updatedAt
-  quiz                   Quiz[]
+  id           String             @id @default(uuid())
+  title        String
+  description  String
+  documentLink String
+  ChaptersId   String
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+  chapters     Chapters           @relation(fields: [ChaptersId], references: [id], onDelete: Cascade)
+  quiz         Quiz[]
+  summary      SummarizedContent?
 }
 
-model Todo{
-  id String @id @default(uuid())
-  createdBy String 
-  user User @relation(fields: [createdBy],references:[id],onDelete: Cascade)
-  title String 
-  description String 
-  deadline DateTime
-  pinned Pinned @default(UNPINNED)
-  status Status @default(PENDING)
-  visibility Visibility @default(VISIBLE)
-  priority Priority @default(LOW)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+model Todo {
+  id          String     @id @default(uuid())
+  createdBy   String
+  title       String
+  description String
+  deadline    DateTime
+  pinned      Pinned     @default(UNPINNED)
+  status      Status     @default(PENDING)
+  visibility  Visibility @default(VISIBLE)
+  priority    Priority   @default(LOW)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  user        User       @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 }
 
 model SummarizedContent {
-  id String @id @default(uuid())
-  notesId String @unique
-  notes Notes @relation(fields:[notesId],references: [id],onDelete: Cascade)
-  summary String
-  quiz String
+  id        String   @id @default(uuid())
+  notesId   String   @unique
+  summary   String
+  quiz      String
+  text     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  notes     Notes    @relation(fields: [notesId], references: [id], onDelete: Cascade)
 }
 
 model Interactions {
-  id String @id @default(uuid())
-  raisedBy String
-  user User @relation(fields: [raisedBy], references: [id], onDelete: Cascade)
-  chapterId String
-  chapter Chapters @relation(fields: [chapterId], references: [id], onDelete: Cascade)
-  message String 
+  id          String         @id @default(uuid())
+  raisedBy    String
+  chapterId   String
+  message     String
   messageType Classification @default(ANNOUNCEMENT)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  chapter     Chapters       @relation(fields: [chapterId], references: [id], onDelete: Cascade)
+  user        User           @relation(fields: [raisedBy], references: [id], onDelete: Cascade)
 }
-
 
 model submission {
-  id                      String   @id @default(uuid())
-  userId                  String
-  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  quizId                  String
-  quiz                    Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  totalQuestion           Int
-  totalAttemptedQuestion  Int
-  totalCorrectQuestion    Int
-  totalWrongQuestion      Int
-  createdAt               DateTime @default(now())
-  updatedAt               DateTime @updatedAt
+  id                     String   @id @default(uuid())
+  userId                 String
+  quizId                 String
+  totalQuestion          Int
+  totalAttemptedQuestion Int
+  totalCorrectQuestion   Int
+  totalWrongQuestion     Int
+  createdAt              DateTime @default(now())
+  updatedAt              DateTime @updatedAt
+  quiz                   Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
-
-
 model Quiz {
-  id          String     @id @default(uuid())
+  id          String       @id @default(uuid())
   title       String
   description String?
   notesId     String
-  notes       Notes      @relation(fields: [notesId], references: [id], onDelete: Cascade)
   createdBy   String
-  user        User       @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  isLive      Live         @default(REJECTED)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   questions   Question[]
+  user        User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  notes       Notes        @relation(fields: [notesId], references: [id], onDelete: Cascade)
   submissions submission[]
-  isLive      Live        @default(REJECTED)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
 }
 
 model Question {
-  id         String   @id @default(uuid())
+  id         String     @id @default(uuid())
   quizId     String
-  quiz       Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   question   String
-  options    String[] // array of options
-  answers    String // array of correct answers
+  options    String[]
+  answers    String
   visibility Visibility @default(VISIBLE)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  quiz       Quiz       @relation(fields: [quizId], references: [id], onDelete: Cascade)
+}
+
+enum Status {
+  PENDING
+  COMPLETED
+}
+
+enum Visibility {
+  VISIBLE
+  HIDDEN
+}
+
+enum Classification {
+  ANNOUNCEMENT
+  DOUBTS
+}
+
+enum Live {
+  APPROVED
+  PUBLISHED
+  REJECTED
+}
+
+enum Pinned {
+  PINNED
+  UNPINNED
+}
+
+enum Role {
+  SUPERADMIN
+  ADMIN
+  USER
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
 }

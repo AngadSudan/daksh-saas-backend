@@ -51,6 +51,7 @@ const ExtractTextAndGenerateSummary = async (file, noteid, number) => {
         notesId: noteid,
         summary: summarizedText,
         quiz: generatedQuestions,
+        text: extractedText,
       },
     });
   } catch (error) {

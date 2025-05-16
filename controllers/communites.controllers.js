@@ -815,7 +815,7 @@ const createQuizFromNotes = async (req, res) => {
     // console.log(notesInteraction);
 
     let quizResult = await AiFeatures.generateSummarizedQuiz(
-      notesInteraction[0].summary,
+      notesInteraction[0].text || notesInteraction[0].summary,
       number
     );
     quizResult = quizResult.replaceAll("```", "'");
