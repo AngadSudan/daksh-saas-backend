@@ -1,0 +1,24 @@
+name: Deploy to staging
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install sshpass
+        run: sudo apt-get update && sudo apt-get install -y sshpass
+
+      - name: Deploy using password auth
+        env:
+          SSH_PASSWORD: ${{ secrets.password }}
+        run: |
+          sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no aravconray@34.55.231.152 << 'EOF' && ls
+            cd daksh && ls && cd backend && pwd && ls &&
+            export NVM_DIR=~/.nvm
+            source ~/.nvm/nvm.sh &&
+            git pull https://angadsudan:${{secrets.sshToken}}@github.com/AngadSudan/daksh-saas-backend.git main && pm2 restart 1
+          EOF
