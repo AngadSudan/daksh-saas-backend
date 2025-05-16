@@ -24,6 +24,7 @@ class CloudinaryService {
 
       const mimeType = file.mimetype;
 
+      console.log(mimeType);
       // Upload the file to Cloudinary
       const response = await Cloudinary.uploader.upload(tempFilePath, {
         resource_type: "auto",

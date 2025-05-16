@@ -120,7 +120,7 @@ class AiFeatures {
       Here's the Question-${question}
       Here's the content of the pdf/pptx - ${text}
       and this is the previous conversation that occured -${prevConversation}
-      Dont add any ** or any * or use any symbols, instead of bullets add numbering. Talk in a general way keeping yourself valid to the pdf
+      Dont add any ** or any * or use any symbols, instead of bullets add numbering.
       `;
 
     const response = await this.model.generateContent(prompt);

@@ -9,6 +9,7 @@
     "dev": "nodemon index.js",
     "start": "node index.js",
     "build": "prisma generate && prisma migrate deploy",
+    "dev:docker": "npx prisma migrate dev && node dist/index.js",
     "postinstall": "prisma generate"
   },
   "keywords": [
