@@ -17,8 +17,6 @@ jobs:
           SSH_PASSWORD: ${{ secrets.password }}
         run: |
           sshpass -p "$SSH_PASSWORD" ssh -o StrictHostKeyChecking=no aravconray@34.55.231.152 << 'EOF' && ls
-            cd daksh && ls && cd backend && pwd && ls &&
-            export NVM_DIR=~/.nvm
-            source ~/.nvm/nvm.sh &&
-            git pull https://angadsudan:${{secrets.sshToken}}@github.com/AngadSudan/daksh-saas-backend.git main && pm2 restart 1
+            cd daksh && ls && cd backend && pwd &&
+            git pull https://angadsudan:${{secrets.sshToken}}@github.com/AngadSudan/daksh-saas-backend.git main && npm i && pm2 restart 1
           EOF
