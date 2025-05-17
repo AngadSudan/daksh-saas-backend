@@ -65,6 +65,7 @@ class AiFeatures {
         Ensure the questions cover different aspects of the summary and avoid repetition. The quiz should be returned in the following JSON format:
 
         generate me ${number} questions of each topic.
+        if the response is a json then the text is all the data in the objects.
         {   
         "quiz": {  
             "single_correct": [  
