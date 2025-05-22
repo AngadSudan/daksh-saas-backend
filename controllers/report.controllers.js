@@ -30,6 +30,16 @@ const getUserReport = async (req, res) => {
         quizId: quizId,
         userId: user,
       },
+      include: {
+        quiz: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            id: true,
+          },
+        },
+      },
     });
     if (!submissions || submissions.length === 0) {
       return res.status(200).json(new ApiResponse(200, "No submissions found"));
@@ -77,6 +87,17 @@ const getAllUserReport = async (req, res) => {
     const submissions = await prismaClient.submission.findMany({
       where: {
         quizId: quizId,
+        userId: user,
+      },
+      include: {
+        quiz: true,
+        user: {
+          select: {
+            name: true,
+            email: true,
+            id: true,
+          },
+        },
       },
     });
 

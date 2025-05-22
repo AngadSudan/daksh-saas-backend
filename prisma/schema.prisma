@@ -132,6 +132,9 @@ model submission {
   totalWrongQuestion     Int
   createdAt              DateTime @default(now())
   updatedAt              DateTime @updatedAt
+  correct                String?  @default(" ")
+  Incorrect              String?  @default(" ")
+  unattempted            String?  @default(" ")
   quiz                   Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   user                   User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

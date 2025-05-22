@@ -308,6 +308,9 @@ const submitQuiz = async (req, res) => {
     totalAttemptedQuestion,
     totalCorrectQuestion,
     totalWrongQuestion,
+    correct,
+    incorrect,
+    unattempted,
   } = req.body;
   try {
     const user = req.user.id;
@@ -322,7 +325,6 @@ const submitQuiz = async (req, res) => {
     });
 
     if (!dbQuiz) throw new Error("No Such Quiz Found");
-
     const dbAnswers = await prismaClient.submission.create({
       data: {
         quizId: dbQuiz.id,
@@ -331,6 +333,9 @@ const submitQuiz = async (req, res) => {
         totalAttemptedQuestion,
         totalCorrectQuestion,
         totalWrongQuestion,
+        correct: JSON.stringify(correct),
+        Incorrect: JSON.stringify(incorrect),
+        unattempted: JSON.stringify(unattempted),
       },
     });
 
