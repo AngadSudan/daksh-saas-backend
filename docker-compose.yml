@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    ports:
+      - "3000:3000"
+    networks:
+      - daksh
+
+  postgres:
+    image: postgres:latest
+    env_file:
+      - ./backend/.env
+    ports:
+      - "5432:5432"
+    networks:
+      - daksh
+    volumes:
+      - postgres_data:/var/lib/postgresql/data

@@ -1,0 +1,5 @@
+-- CreateEnum
+CREATE TYPE "MODE" AS ENUM ('EASY', 'MEDIUM', 'HARD');
+
+-- AlterTable
+ALTER TABLE "Quiz" ADD COLUMN     "mode" "MODE" NOT NULL DEFAULT 'EASY';

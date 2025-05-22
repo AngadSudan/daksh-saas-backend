@@ -801,7 +801,7 @@ const createQuizFromNotes = async (req, res) => {
   try {
     const { id: noteid } = req.params;
     const user = req.user.id;
-    const { number, title, description } = req.body;
+    const { number, title, description, mode } = req.body;
 
     // "question": "What is the value of x in 2x + 3 = 7?",
     //   "options": ["1", "2", "3", "4"],
@@ -816,7 +816,8 @@ const createQuizFromNotes = async (req, res) => {
 
     let quizResult = await AiFeatures.generateSummarizedQuiz(
       notesInteraction[0].text || notesInteraction[0].summary,
-      number
+      number,
+      mode
     );
     quizResult = quizResult.replaceAll("```", "'");
     quizResult = quizResult.replace("'json", "'");

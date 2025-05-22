@@ -104,9 +104,9 @@ model SummarizedContent {
   notesId   String   @unique
   summary   String
   quiz      String
-  text     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  text      String?  @default("\"\"") @db.VarChar
   notes     Notes    @relation(fields: [notesId], references: [id], onDelete: Cascade)
 }
 
@@ -145,6 +145,7 @@ model Quiz {
   isLive      Live         @default(REJECTED)
   createdAt   DateTime     @default(now())
   updatedAt   DateTime     @updatedAt
+  mode        String?      @default("EASY") @db.VarChar
   questions   Question[]
   user        User         @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   notes       Notes        @relation(fields: [notesId], references: [id], onDelete: Cascade)

@@ -12,6 +12,7 @@ import {
   todoRouter,
   userRouter,
   communityRouter,
+  reportRouter,
   interactionRouter,
 } from "./routes/index.js";
 
@@ -97,6 +98,7 @@ app.use("/api/v1/todo", todoRouter);
 app.use("/api/v1/user", userRouter);
 app.use("/api/v1/community", communityRouter);
 app.use("/api/v1/interaction", interactionRouter);
+app.use("/api/v1/report", reportRouter);
 
 app.get("/", (req, res) => {
   res.status(200).json({
