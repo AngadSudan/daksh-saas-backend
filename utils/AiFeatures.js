@@ -66,6 +66,8 @@ class AiFeatures {
         incase of medium mode make question that are tough and confusing.
         incase of hard mode make both hard question which are indepth from the text and confusing to answer.
 
+        You will be provided the text content, based on that grasp the general topic that is being talked about eg:(poultry management or computer architechture) and the generate
+        me questions on them.
         If there are some formulas in the text then generate numericals too and give exactly the number of questions as asked by the users.
 
        the response is a json then the text is all the data in the objects.
