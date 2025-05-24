@@ -239,21 +239,14 @@ const getAllQuiz = async (req, res) => {
       where: { id: user },
     });
 
-    if (!dbUser) throw new Error("user not found");
-    if (!noteid) throw new Error("please enter a note id");
-
-    const dbQuiz = await prismaClient.quiz.findMany({
-      where: { notesId: noteid },
+    const dbNote = await prismaClient.notes.findUnique({
+      where: { id: noteid },
       include: {
-        notes: {
+        chapters: {
           include: {
-            chapters: {
+            subject: {
               include: {
-                subject: {
-                  include: {
-                    community: true,
-                  },
-                },
+                community: true,
               },
             },
           },
@@ -261,9 +254,18 @@ const getAllQuiz = async (req, res) => {
       },
     });
 
+    if (!dbUser) throw new Error("user not found");
+    if (!noteid) throw new Error("please enter a note id");
+
+    const dbQuiz = await prismaClient.quiz.findMany({
+      where: { notesId: noteid },
+    });
+
     if (!dbQuiz)
       return res.status(200).json(new ApiResponse(200, "No Quiz Found", []));
-    return res.status(200).json(new ApiResponse(200, "Quiz Found", dbQuiz));
+    return res
+      .status(200)
+      .json(new ApiResponse(200, "Quiz Found", { dbNote, dbQuiz }));
   } catch (error) {
     console.log(error);
     return res
