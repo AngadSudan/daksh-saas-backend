@@ -9,6 +9,7 @@ class AiFeatures {
   }
 
   async generateSummarizedText(text) {
+    if (!text) return null;
     const prompt = `
         "You are an AI assistant tasked with summarizing academic PDFs while maintaining the richness of the content.
         Given a PDF, extract the key information, including definitions, explanations, and key takeaways.
@@ -54,6 +55,7 @@ class AiFeatures {
   }
 
   async generateSummarizedQuiz(text, number, mode) {
+    if (!text) return null;
     const prompt = `
         "You are an AI specialized in text summarization and quiz generation. Given the extracted text from a PDF, perform the following tasks:
         2 Quiz Generation (JSON format): Based on the summarized content, generate questions:
@@ -98,6 +100,7 @@ class AiFeatures {
     return response.response.candidates[0].content.parts[0].text;
   }
   async generateAnswer(question, prevConversation, text) {
+    // if(!text) return null;
     const prompt = `Purpose: This AI chatbot is designed by Team Daksh to provide concise, accurate, and study-related answers while maintaining a polite and professional tone.
       Incase if the user feels demotivated, provide a motivational quote to uplift their spirits.  
     Functionality Guidelines:
